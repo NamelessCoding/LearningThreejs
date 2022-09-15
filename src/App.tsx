@@ -1,10 +1,19 @@
 import logo from './logo.svg';
 import { createRoot } from 'react-dom/client';
 import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, MeshProps, useFrame, useLoader } from '@react-three/fiber';
 import './App.css';
+import {
+  Environment,
+  Sky,
+  Stars,
+  OrbitControls,
+  FlyControls,
+} from '@react-three/drei';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
-function Box(props: any) {
+function Box(props: MeshProps & { extra?: string }) {
   // let a: number = 1;
   // let b: string = 'asduhoiuw';
   // let c: boolean = false;
@@ -28,10 +37,11 @@ function Box(props: any) {
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useFrame((state, delta) => ((ref.current as any).rotation.x += 0.01));
   // Return the view, these are regular Threejs elements expressed in JSX
+
   return (
     <mesh
       {...props}
-      ref={ref}
+      ref={ref as any}
       scale={clicked ? 1.5 : 1}
       onClick={(event) => {
         console.log('click', event);
@@ -47,14 +57,59 @@ function Box(props: any) {
   );
 }
 
+function Custom(props: any) {
+  // const obj = useLoader(
+  //   OBJLoader,
+  //   'https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/teapot.obj'
+  // );
+  const mtl = useLoader(MTLLoader, 'piano.mtl');
+  const obj = useLoader(OBJLoader, '/piano.obj', (loader) => {
+    mtl.preload();
+    loader.setMaterials(mtl);
+    console.log('paiowehfpaowihfpaoiwehfpio');
+  });
+
+  return (
+    // <mesh geometry={obj} material={mtl} />
+    <primitive object={obj} material={mtl}>
+      <meshStandardMaterial />
+    </primitive>
+  );
+}
+
 function App() {
   return (
-    <Canvas>
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
-    </Canvas>
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <Canvas>
+        <OrbitControls />
+        <Environment preset="night" />
+        <Stars radius={100} depth={2} count={5000} factor={4} fade />
+        <Box position={[-1.2, 0, 0]} />
+        <Box position={[1.2, 0, 0]} />
+        <Custom />
+        <pointLight
+          // color="red"
+          position={[0, 0, 0]}
+          // intensity={50}
+          // castShadow={true}
+          // shadow-bias={0.000001}
+          // shadow-normalBias={0.08}
+          // shadow-mapSize-height={512}
+          // shadow-mapSize-width={512}
+          // shadow-camera-near={0.1}
+          // shadow-camera-far={30}
+        />
+        <directionalLight rotation={[0.5, 0.5, 0]} />
+        <Sky
+          distance={200}
+          sunPosition={[1, -0.03, 0.5]}
+          inclination={0}
+          azimuth={0.5}
+        />
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+      </Canvas>
+    </div>
   );
 }
 
