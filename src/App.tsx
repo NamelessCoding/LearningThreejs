@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import { createRoot } from 'react-dom/client';
-import React, { useRef, useState } from 'react';
+import React, { HTMLAttributes, useRef, useState } from 'react';
 import { Canvas, MeshProps, useFrame, useLoader } from '@react-three/fiber';
 import './App.css';
 import {
@@ -77,6 +77,23 @@ function Custom(props: any) {
   );
 }
 
+function Button(props: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      style={{
+        width: 100,
+        height: 20,
+        borderRadius: 4,
+        // backgroundColor: 'blue',
+      }}
+      onClick={() => {
+        console.log('click');
+      }}
+    ></div>
+  );
+}
+
 function App() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -109,6 +126,23 @@ function App() {
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
       </Canvas>
+      <div
+        style={{
+          position: 'absolute',
+          top: '2%',
+          left: '2%',
+          // width: '96%',
+          backgroundColor: '#00000088',
+          height: '10%',
+          borderRadius: '10px',
+          padding: 20,
+        }}
+      >
+        <Button style={{ color: 'red' }} />
+        {[1, 2, 3].map((item) => {
+          return <Button style={{ color: 'yellow' }} />;
+        })}
+      </div>
     </div>
   );
 }
